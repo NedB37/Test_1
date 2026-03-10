@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wayne Gretzky | The Great One</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111a2e;
+      --accent: #f7b500;
+      --text: #e6edf7;
+      --muted: #9fb0d1;
+      --card: #16233f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, #17233f 0%, var(--bg) 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(to bottom, rgba(247,181,0,0.12), transparent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      max-width: 700px;
+      margin: 1rem auto 0;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    main {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    section {
+      background: rgba(17, 26, 46, 0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 1.25rem;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 16px 30px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 1.45rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .stat {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 0.9rem;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat .num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: block;
+    }
+
+    .timeline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .timeline li {
+      padding: 0.8rem;
+      border-radius: 10px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .year {
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 0.4rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    a {
+      color: #ffd464;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Wayne Gretzky: The Great One</h1>
+    <p class="subtitle">
+      A tribute website celebrating the legendary hockey career of Wayne Gretzky, the NHL's all-time leader in goals, assists, and points.
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Career Snapshot</h2>
+      <div class="stats">
+        <article class="stat"><span class="num">894</span>Career NHL Goals</article>
+        <article class="stat"><span class="num">1,963</span>Career NHL Assists</article>
+        <article class="stat"><span class="num">2,857</span>Career NHL Points</article>
+        <article class="stat"><span class="num">4</span>Stanley Cup Championships</article>
+        <article class="stat"><span class="num">9</span>Hart Trophies (MVP)</article>
+        <article class="stat"><span class="num">10</span>Art Ross Trophies</article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Career Timeline</h2>
+      <ul class="timeline">
+        <li><span class="year">1978:</span>Turns pro in the WHA with the Indianapolis Racers before joining the Edmonton Oilers.</li>
+        <li><span class="year">1979:</span>Officially enters the NHL as the Oilers join the league.</li>
+        <li><span class="year">1981:</span>Records his first 50-goal season and establishes himself as an elite scorer.</li>
+        <li><span class="year">1984-1988:</span>Leads Edmonton to four Stanley Cup titles in five seasons.</li>
+        <li><span class="year">1988:</span>Shocked hockey fans with a blockbuster trade to the Los Angeles Kings.</li>
+        <li><span class="year">1994:</span>Breaks Gordie Howe's all-time goals record.</li>
+        <li><span class="year">1999:</span>Retires as the most decorated offensive player in hockey history.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Legacy</h2>
+      <p>
+        Gretzky's vision, anticipation, and playmaking transformed modern hockey. His influence extends far beyond his statistics—he expanded the game's reach across North America and inspired generations of players.
+      </p>
+      <p>
+        In 1999, the NHL retired his number <strong>99</strong> league-wide, a unique honor that reflects his singular impact on the sport.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Built as a fan showcase page. Learn more at
+    <a href="https://www.nhl.com/player/wayne-gretzky-8447400" target="_blank" rel="noopener noreferrer">NHL.com</a>.
+  </footer>
+</body>
+</html>
