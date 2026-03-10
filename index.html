@@ -7,11 +7,14 @@
   <style>
     :root {
       --bg: #0b1220;
+      --bg-2: #17233f;
       --panel: #111a2e;
       --accent: #f7b500;
       --text: #e6edf7;
       --muted: #9fb0d1;
       --card: #16233f;
+      --success: #45d483;
+      --danger: #ff5b7d;
     }
 
     * { box-sizing: border-box; }
@@ -19,9 +22,36 @@
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at top, #17233f 0%, var(--bg) 55%);
+      background: radial-gradient(circle at top, var(--bg-2) 0%, var(--bg) 55%);
       color: var(--text);
       line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 260ms ease, color 260ms ease;
+    }
+
+    body.light {
+      --bg: #edf3ff;
+      --bg-2: #dbe7ff;
+      --panel: rgba(255, 255, 255, 0.9);
+      --accent: #1d4ed8;
+      --text: #18253f;
+      --muted: #425881;
+      --card: #f4f7ff;
+      --success: #059669;
+      --danger: #dc2626;
+    }
+
+    .puck {
+      position: fixed;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #f4f4f4, #4b4b4b 60%, #181818);
+      pointer-events: none;
+      z-index: 9999;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
+      opacity: 0.85;
+      transform: translate(-50%, -50%);
     }
 
     header {
@@ -29,6 +59,8 @@
       text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.08);
       background: linear-gradient(to bottom, rgba(247,181,0,0.12), transparent);
+      position: relative;
+      isolation: isolate;
     }
 
     h1 {
@@ -44,16 +76,44 @@
       font-size: 1.1rem;
     }
 
+    .top-controls {
+      margin-top: 1.2rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    button, input[type="range"] {
+      accent-color: var(--accent);
+    }
+
+    .btn {
+      border: 1px solid rgba(255,255,255,0.2);
+      background: var(--card);
+      color: var(--text);
+      padding: 0.55rem 0.85rem;
+      border-radius: 10px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
     main {
       max-width: 1050px;
       margin: 0 auto;
       padding: 2rem 1.5rem 4rem;
       display: grid;
-      gap: 1.5rem;
+      gap: 1.2rem;
     }
 
     section {
-      background: rgba(17, 26, 46, 0.8);
+      background: var(--panel);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 14px;
       padding: 1.25rem;
@@ -78,13 +138,26 @@
       border-radius: 10px;
       padding: 0.9rem;
       border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 220ms ease;
+    }
+
+    .stat:hover {
+      transform: scale(1.04);
     }
 
     .stat .num {
-      font-size: 1.6rem;
+      font-size: 1.7rem;
       font-weight: 800;
       color: var(--accent);
       display: block;
+    }
+
+    .timeline-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
 
     .timeline {
@@ -100,6 +173,13 @@
       border-radius: 10px;
       background: var(--card);
       border: 1px solid rgba(255,255,255,0.08);
+      opacity: 0.4;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .timeline li.active {
+      opacity: 1;
+      transform: translateX(4px);
     }
 
     .year {
@@ -107,6 +187,39 @@
       font-weight: 700;
       margin-right: 0.4rem;
     }
+
+    .quiz-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .quiz-card {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.85rem;
+      background: var(--card);
+    }
+
+    .answers {
+      display: flex;
+      gap: 0.55rem;
+      margin-top: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .answers .btn {
+      font-weight: 500;
+      padding: 0.45rem 0.7rem;
+    }
+
+    .quiz-feedback {
+      font-weight: 700;
+      min-height: 1.2rem;
+      color: var(--muted);
+    }
+
+    .quiz-feedback.good { color: var(--success); }
+    .quiz-feedback.bad { color: var(--danger); }
 
     footer {
       text-align: center;
@@ -122,37 +235,55 @@
   </style>
 </head>
 <body>
+  <div class="puck" id="puck" aria-hidden="true"></div>
+
   <header>
     <h1>Wayne Gretzky: The Great One</h1>
     <p class="subtitle">
       A tribute website celebrating the legendary hockey career of Wayne Gretzky, the NHL's all-time leader in goals, assists, and points.
     </p>
+    <div class="top-controls">
+      <button class="btn" id="themeToggle" type="button">Switch to Light Ice Theme</button>
+      <button class="btn" id="shuffleFacts" type="button">Shuffle Random Gretzky Fact</button>
+    </div>
+    <p id="factText" class="subtitle" style="font-size:1rem; margin-top:0.9rem;">Tap "Shuffle" for a surprising Gretzky fact.</p>
   </header>
 
   <main>
     <section>
       <h2>Career Snapshot</h2>
       <div class="stats">
-        <article class="stat"><span class="num">894</span>Career NHL Goals</article>
-        <article class="stat"><span class="num">1,963</span>Career NHL Assists</article>
-        <article class="stat"><span class="num">2,857</span>Career NHL Points</article>
-        <article class="stat"><span class="num">4</span>Stanley Cup Championships</article>
-        <article class="stat"><span class="num">9</span>Hart Trophies (MVP)</article>
-        <article class="stat"><span class="num">10</span>Art Ross Trophies</article>
+        <article class="stat"><span class="num" data-target="894">0</span>Career NHL Goals</article>
+        <article class="stat"><span class="num" data-target="1963">0</span>Career NHL Assists</article>
+        <article class="stat"><span class="num" data-target="2857">0</span>Career NHL Points</article>
+        <article class="stat"><span class="num" data-target="4">0</span>Stanley Cup Championships</article>
+        <article class="stat"><span class="num" data-target="9">0</span>Hart Trophies (MVP)</article>
+        <article class="stat"><span class="num" data-target="10">0</span>Art Ross Trophies</article>
       </div>
     </section>
 
     <section>
       <h2>Career Timeline</h2>
-      <ul class="timeline">
-        <li><span class="year">1978:</span>Turns pro in the WHA with the Indianapolis Racers before joining the Edmonton Oilers.</li>
-        <li><span class="year">1979:</span>Officially enters the NHL as the Oilers join the league.</li>
-        <li><span class="year">1981:</span>Records his first 50-goal season and establishes himself as an elite scorer.</li>
-        <li><span class="year">1984-1988:</span>Leads Edmonton to four Stanley Cup titles in five seasons.</li>
-        <li><span class="year">1988:</span>Shocked hockey fans with a blockbuster trade to the Los Angeles Kings.</li>
-        <li><span class="year">1994:</span>Breaks Gordie Howe's all-time goals record.</li>
-        <li><span class="year">1999:</span>Retires as the most decorated offensive player in hockey history.</li>
+      <div class="timeline-controls">
+        <label for="yearRange">Highlight events through year: <strong id="yearLabel">1999</strong></label>
+        <input type="range" min="1978" max="1999" value="1999" id="yearRange" />
+      </div>
+      <ul class="timeline" id="timelineList">
+        <li data-year="1978"><span class="year">1978:</span>Turns pro in the WHA with the Indianapolis Racers before joining the Edmonton Oilers.</li>
+        <li data-year="1979"><span class="year">1979:</span>Officially enters the NHL as the Oilers join the league.</li>
+        <li data-year="1981"><span class="year">1981:</span>Records his first 50-goal season and establishes himself as an elite scorer.</li>
+        <li data-year="1988"><span class="year">1984-1988:</span>Leads Edmonton to four Stanley Cup titles in five seasons.</li>
+        <li data-year="1988"><span class="year">1988:</span>Shocked hockey fans with a blockbuster trade to the Los Angeles Kings.</li>
+        <li data-year="1994"><span class="year">1994:</span>Breaks Gordie Howe's all-time goals record.</li>
+        <li data-year="1999"><span class="year">1999:</span>Retires as the most decorated offensive player in hockey history.</li>
       </ul>
+    </section>
+
+    <section>
+      <h2>Gretzky Trivia Challenge</h2>
+      <div class="quiz-grid" id="quiz"></div>
+      <p class="quiz-feedback" id="quizFeedback"></p>
+      <button class="btn" id="gradeQuiz" type="button">Grade My Hockey IQ</button>
     </section>
 
     <section>
@@ -170,5 +301,132 @@
     Built as a fan showcase page. Learn more at
     <a href="https://www.nhl.com/player/wayne-gretzky-8447400" target="_blank" rel="noopener noreferrer">NHL.com</a>.
   </footer>
+
+  <script>
+    const nums = document.querySelectorAll('.num');
+    const puck = document.getElementById('puck');
+    const themeToggle = document.getElementById('themeToggle');
+    const factText = document.getElementById('factText');
+    const shuffleFacts = document.getElementById('shuffleFacts');
+    const yearRange = document.getElementById('yearRange');
+    const yearLabel = document.getElementById('yearLabel');
+    const timelineItems = document.querySelectorAll('#timelineList li');
+    const quizContainer = document.getElementById('quiz');
+    const quizFeedback = document.getElementById('quizFeedback');
+    const gradeQuiz = document.getElementById('gradeQuiz');
+
+    const facts = [
+      'Gretzky once scored 50 goals in only 39 games during the 1981-82 season.',
+      'If Gretzky never scored a goal, he would still be the NHL all-time points leader from assists alone.',
+      'He won the Hart Trophy as league MVP 8 straight times from 1980 to 1987.',
+      'His famous office behind the net became known league-wide as “Gretzky\'s office.”'
+    ];
+
+    const questions = [
+      {
+        q: 'How many total NHL points did Gretzky record?',
+        choices: ['2,301', '2,857', '1,963'],
+        answer: '2,857'
+      },
+      {
+        q: 'What number did the NHL retire league-wide for Gretzky?',
+        choices: ['9', '99', '19'],
+        answer: '99'
+      },
+      {
+        q: 'How many Stanley Cups did he win with Edmonton?',
+        choices: ['4', '6', '2'],
+        answer: '4'
+      }
+    ];
+
+    function animateStats() {
+      nums.forEach((num) => {
+        const target = Number(num.dataset.target);
+        let current = 0;
+        const increment = Math.max(1, Math.ceil(target / 80));
+
+        const step = () => {
+          current += increment;
+          if (current >= target) {
+            num.textContent = target.toLocaleString();
+            return;
+          }
+          num.textContent = current.toLocaleString();
+          requestAnimationFrame(step);
+        };
+
+        requestAnimationFrame(step);
+      });
+    }
+
+    function updateTimeline() {
+      const selected = Number(yearRange.value);
+      yearLabel.textContent = selected;
+      timelineItems.forEach((item) => {
+        item.classList.toggle('active', Number(item.dataset.year) <= selected);
+      });
+    }
+
+    function buildQuiz() {
+      quizContainer.innerHTML = '';
+      questions.forEach((question, idx) => {
+        const card = document.createElement('article');
+        card.className = 'quiz-card';
+        card.innerHTML = `
+          <strong>${idx + 1}. ${question.q}</strong>
+          <div class="answers">
+            ${question.choices.map((choice) => `<button class="btn" data-q="${idx}" data-answer="${choice}">${choice}</button>`).join('')}
+          </div>
+        `;
+        quizContainer.append(card);
+      });
+    }
+
+    const responses = new Map();
+
+    quizContainer.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLButtonElement)) return;
+      if (!target.dataset.q || !target.dataset.answer) return;
+
+      const qIndex = Number(target.dataset.q);
+      responses.set(qIndex, target.dataset.answer);
+
+      const siblings = target.parentElement.querySelectorAll('button');
+      siblings.forEach((btn) => btn.style.borderColor = 'rgba(255,255,255,0.2)');
+      target.style.borderColor = 'var(--accent)';
+    });
+
+    gradeQuiz.addEventListener('click', () => {
+      let score = 0;
+      questions.forEach((question, idx) => {
+        if (responses.get(idx) === question.answer) score += 1;
+      });
+      quizFeedback.textContent = `You scored ${score}/${questions.length}. ${score === questions.length ? 'Perfect hat trick! 🏒🔥' : 'Try again and chase greatness.'}`;
+      quizFeedback.className = `quiz-feedback ${score >= 2 ? 'good' : 'bad'}`;
+    });
+
+    shuffleFacts.addEventListener('click', () => {
+      const fact = facts[Math.floor(Math.random() * facts.length)];
+      factText.textContent = fact;
+    });
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      const isLight = document.body.classList.contains('light');
+      themeToggle.textContent = isLight ? 'Switch to Dark Arena Theme' : 'Switch to Light Ice Theme';
+    });
+
+    window.addEventListener('mousemove', (event) => {
+      puck.style.left = `${event.clientX}px`;
+      puck.style.top = `${event.clientY}px`;
+    });
+
+    animateStats();
+    updateTimeline();
+    buildQuiz();
+    yearRange.addEventListener('input', updateTimeline);
+  </script>
 </body>
 </html>
